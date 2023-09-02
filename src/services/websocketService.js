@@ -1,9 +1,10 @@
 class WebSocketService {
   constructor() {
-    this.socket = new WebSocket("ws://localhost:8000/ws/materials/"); // Replace with your WebSocket URL
+    this.socket = new WebSocket("ws://localhost:8000/ws/materials/");
 
     this.socket.addEventListener("open", this.handleOpen);
     this.socket.addEventListener("message", this.handleMessage);
+    this.socket.addEventListener("error", this.handleError);
   }
 
   handleOpen = () => {
@@ -11,11 +12,19 @@ class WebSocketService {
   };
 
   handleMessage = (event) => {
-    console.log("here");
-    const message = JSON.parse(event.data);
-    console.log("Received WebSocket message:", message);
+    console.log("Received WebSocket message:", event.data);
 
-    // Handle the received message here and update your React components accordingly
+    try {
+      const message = JSON.parse(event.data);
+      console.log("message", message);
+      // Handle the received message here and update your React components accordingly
+    } catch (error) {
+      console.error("Error parsing WebSocket message:", error);
+    }
+  };
+
+  handleError = (error) => {
+    console.error("WebSocket error:", error);
   };
 
   close = () => {
