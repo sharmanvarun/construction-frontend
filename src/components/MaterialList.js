@@ -1,16 +1,19 @@
 // MaterialList.js
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { fetchMaterials } from "../actions/materialActions";
+import {
+  fetchMaterials,
+  updateMaterialAmount,
+} from "../actions/materialActions";
 import "../style/MaterialList.css"; // Import the CSS file
 
-const MaterialList = ({ materials, fetchMaterials }) => {
+const MaterialList = ({ materials, fetchMaterials, updateMaterialAmount }) => {
   const [minAmount, setMinAmount] = useState(""); // Minimum amount filter
   const [maxAmount, setMaxAmount] = useState(""); // Maximum amount filter
 
   useEffect(() => {
     fetchMaterials();
-  }, [fetchMaterials]);
+  }, [fetchMaterials, updateMaterialAmount]);
 
   // Filter materials based on the amount range
   const filteredMaterials = materials.filter((material) => {
@@ -40,6 +43,11 @@ const MaterialList = ({ materials, fetchMaterials }) => {
   const clearFilters = () => {
     setMinAmount("");
     setMaxAmount("");
+  };
+
+  const handleAmountChange = (materialId, newAmount) => {
+    // Call the updateMaterialAmount action to update the amount
+    updateMaterialAmount(materialId, newAmount);
   };
 
   return (
@@ -76,6 +84,21 @@ const MaterialList = ({ materials, fetchMaterials }) => {
               <p>Name: {material.name}</p>
               <p>Description: {material.description}</p>
               <p>Amount: {material.amount}</p>
+              <button
+                onClick={() =>
+                  handleAmountChange(material.id, material.amount - 1)
+                }
+              >
+                -
+              </button>
+
+              <button
+                onClick={() =>
+                  handleAmountChange(material.id, material.amount + 1)
+                }
+              >
+                +
+              </button>
             </div>
           </div>
         ))}
@@ -88,4 +111,7 @@ const mapStateToProps = (state) => ({
   materials: state.materials.materials,
 });
 
-export default connect(mapStateToProps, { fetchMaterials })(MaterialList);
+export default connect(mapStateToProps, {
+  fetchMaterials,
+  updateMaterialAmount,
+})(MaterialList);
